@@ -27,8 +27,7 @@ input_data = traindf[[1, 'labels']].reset_index(drop = True)
 sc = MinMaxScaler(feature_range = (0, 1))
 input_data = sc.fit_transform(input_data)
 x_train, y_train = [], []
-lookback = 10 # number of previous grades the neural network will process
-features = 2
+lookback, features = 10, 2 # number of previous grades the neural network will process
 for i in range(input_data.shape[0] - lookback - 1):
     t = []
     for j in range(0, lookback):
@@ -39,19 +38,21 @@ for i in range(input_data.shape[0] - lookback - 1):
 x_train, y_train = np.array(x_train), np.array(y_train)
 x_train = x_train.reshape(x_train.shape[0], lookback, features)
 preds, future_preds = [], []
-n = 100 # number of trials to run the model (more trials --> more accurate estimates)
-for x in range(n):
+epo = 500 # number of times that the algorithm will pass through the dataset for each iteration
+bat = 16 # number of values the algorithm will analyze at once (lower batch size → more accurate estimates)
+iter = 100 # number of iterations to run the model (more iterations --> more accurate estimates)
+for x in range(iter):
     model = Sequential()
     model.add(LSTM(50, input_shape=(lookback, features)))
     model.add(Dense(8, activation='relu'))
     model.add(Dropout(0.15))
     model.add(Dense(1))
     model.compile(loss = 'mean_squared_error', optimizer = 'adam')
-    model.fit(x_train,y_train, batch_size = 16, epochs = 500)
+    model.fit(x_train,y_train, batch_size = bat, epochs = epo)
     preds.append((model.predict(x_train)))
     future_preds.append(model.predict(input_data[-1:-(lookback + 1):-1][::-1].reshape(1, lookback, features)))
-preds, avg_future = np.array(preds), sum(np.array(future_preds)) / n
-avgpreds = [sum(preds[:,i]) / n for i in range(preds.shape[1])]
+preds, avg_future = np.array(preds), sum(np.array(future_preds)) / iter
+avgpreds = [sum(preds[:,i]) / iter for i in range(preds.shape[1])]
 avgpreds = np.array(avgpreds)
 avgpreds = list(avgpreds.reshape(avgpreds.shape[0]))
 preddf = pd.DataFrame(y_train)
