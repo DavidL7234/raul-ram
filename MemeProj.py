@@ -44,8 +44,6 @@ iter = 100 # number of iterations to run the model (more iterations --> more acc
 for x in range(iter):
     model = Sequential()
     model.add(LSTM(50, input_shape=(lookback, features)))
-    model.add(Dense(8, activation='relu'))
-    model.add(Dropout(0.15))
     model.add(Dense(1))
     model.compile(loss = 'mean_squared_error', optimizer = 'adam')
     model.fit(x_train,y_train, batch_size = bat, epochs = epo)
