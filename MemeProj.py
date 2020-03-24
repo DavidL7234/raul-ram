@@ -39,8 +39,8 @@ x_train, y_train = np.array(x_train), np.array(y_train)
 x_train = x_train.reshape(x_train.shape[0], lookback, features)
 preds, future_preds = [], []
 epo = 500 # number of times that the algorithm will pass through the dataset for each iteration
-bat = 16 # number of values the algorithm will analyze at once (lower batch size → more accurate estimates)
-iter = 100 # number of iterations to run the model (more iterations --> more accurate estimates)
+bat = 1 # number of values the algorithm will analyze at once (lower batch size → more accurate estimates)
+iter = 3 # number of iterations to run the model (more iterations --> more accurate estimates)
 for x in range(iter):
     model = Sequential()
     model.add(LSTM(50, input_shape=(lookback, features)))
