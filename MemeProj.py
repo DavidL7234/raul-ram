@@ -43,7 +43,7 @@ bat = 1 # number of values the algorithm will analyze at once (lower batch size 
 iter = 3 # number of iterations to run the model (more iterations --> more accurate estimates)
 for x in range(iter):
     model = Sequential()
-    model.add(LSTM(50, input_shape=(lookback, features)))
+    model.add(LSTM(50, activation='relu', input_shape=(lookback, features)))
     model.add(Dense(1))
     model.compile(loss = 'mean_squared_error', optimizer = 'adam')
     model.fit(x_train,y_train, batch_size = bat, epochs = epo)
